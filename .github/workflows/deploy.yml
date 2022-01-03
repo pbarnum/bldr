@@ -9,8 +9,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: akhileshns/heroku-deploy@v3.12.12
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Docker Build
+        uses: docker-practice/actions-setup-docker@master
+      - run: |
+          set -x
+          docker build -t ${{ secrets.HEROKU_APP }} .
+      - name: Push Image and Deploy Container
+        uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: "bldr-app"
