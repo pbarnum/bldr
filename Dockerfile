@@ -1,5 +1,5 @@
 # Build image
-FROM node:14.17 as builder
+FROM node:14.17
 
 WORKDIR /app
 
@@ -8,15 +8,5 @@ RUN yarn install
 
 COPY . .
 RUN yarn build
-
-CMD [ "yarn", "dev" ]
-
-# Release image
-FROM node:14.17 as release
-
-WORKDIR /app
-
-COPY --from=builder /app/public /app/public
-COPY --from=builder /app/server /app/server
 
 CMD [ "yarn", "server" ]
