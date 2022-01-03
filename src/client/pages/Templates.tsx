@@ -1,16 +1,15 @@
-import React, { ChangeEvent, MouseEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, MouseEvent, useState } from "react";
 import AvailableTemplates from "../components/AvailableTemplates";
 import DisplayTemplate from "../components/DisplayTemplate";
 import Unauthorized from "../components/Unauthorized";
-import { CreateTemplateResp, Template } from "../types/template";
+import { Template } from "../types/template";
 import { AppContext, newErrorAlert } from "../App";
 import { useOutletContext, useParams } from "react-router-dom";
 import api from "../api";
 import { ApiMessage } from "../types/api";
-import { User } from "../types/user";
 
 const Templates = (): React.ReactElement => {
-  const { userId, templateId } = useParams();
+  const { userId } = useParams();
   const ctx: AppContext = useOutletContext();
   const [importIsOpen, setImportIsOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
@@ -47,7 +46,7 @@ const Templates = (): React.ReactElement => {
       }
       await api.template
         .createTemplate(ctx.user.id, file)
-        .then((res: CreateTemplateResp) => {
+        .then(() => {
           // FIXME: Appending new template to paginated list causes a discrepency with ListTemplates API response
         })
         .catch((err: ApiMessage) => {

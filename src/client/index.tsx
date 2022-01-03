@@ -4,9 +4,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
-import Templates from "./pages/templates";
-import Generate from "./pages/generate";
-import Compiled from "./pages/compiled";
+import Templates from "./pages/Templates";
+import Generate from "./pages/Generate";
+import Compiled from "./pages/Compiled";
 
 const rootElement = document.getElementById("root");
 render(

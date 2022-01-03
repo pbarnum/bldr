@@ -6,16 +6,16 @@ import { ListOutputsResp, Output } from "../types/output";
 import { AppContext, newErrorAlert } from "../App";
 import { useOutletContext, useParams } from "react-router-dom";
 import api from "../api";
-import { ApiMessage, Pagination } from "../types/api";
+import { ApiMessage } from "../types/api";
 import Unauthorized from "../components/Unauthorized";
 import storage from "../storage";
 
 const Compiled = (): React.ReactElement => {
   const { userId } = useParams();
   const ctx: AppContext = useOutletContext();
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(25);
-  const [pagination, setPagination] = useState<Pagination>();
+  const [page] = useState(1);
+  const [limit] = useState(25);
+  // const [pagination, setPagination] = useState<Pagination>();
   const [loading, setLoading] = useState<boolean>(true);
   const [outputList, setOutputList] = useState<Output[]>([]);
   const [selectedOutput, setSelectedOutput] = useState<Output>();
@@ -28,9 +28,9 @@ const Compiled = (): React.ReactElement => {
     api.output
       .listAllOutputs(userId, page, limit)
       .then((res: ListOutputsResp) => {
-        const { outputs, pagination } = res;
+        const { outputs } = res;
         setOutputList(outputs);
-        setPagination(pagination);
+        // setPagination(pagination);
       })
       .catch((err: ApiMessage) => {
         ctx.setAlert(newErrorAlert(err.message));

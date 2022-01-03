@@ -11,15 +11,15 @@ import Unauthorized from "../components/Unauthorized";
 
 const Generate = (): React.ReactElement => {
   const { userId } = useParams();
-  const [progress, setProgress] = useState<number>(0);
-  const [compileError, setCompileError] = useState<boolean | null>(null);
+  // const [progress, setProgress] = useState<number>(0);
+  // const [compileError, setCompileError] = useState<boolean | null>(null);
   const [templateOptions, setTemplateOptions] = useState<
     Global.TemplateOption[]
   >([]);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [selectedTemplate, setSelectedTemplate] =
     useState<Global.TemplateOption | null>(null);
-  const [templateContents, setTemplateContents] = useState<string>("");
+  // const [templateContents, setTemplateContents] = useState<string>("");
   const [templateVariables, setTemplateVariables] = useState<
     Global.TemplateVariable[]
   >([]);
@@ -74,7 +74,7 @@ const Generate = (): React.ReactElement => {
         matches.reduce((prev, cur) => Object.assign(prev, { [cur]: true }), {})
       ).forEach((key) => data.push({ label: key, value: key }));
     }
-    setTemplateContents(template.contents);
+    // setTemplateContents(template.contents);
     setSelectedTemplate(selected);
     setFileName(selected.value);
     setTemplateVariables(data);
@@ -88,14 +88,14 @@ const Generate = (): React.ReactElement => {
     }
 
     // setShowModal(true);
-    setCompileError(false);
-    setProgress(0);
+    // setCompileError(false);
+    // setProgress(0);
 
     if (!/^[\w-.]+$/.test(fileName)) {
       console.error("bad file name", fileName);
       // setModalBody(dangerModalBody("File name is invalid"));
-      setCompileError(true);
-      setProgress(1);
+      // setCompileError(true);
+      // setProgress(1);
       return;
     }
 

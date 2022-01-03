@@ -16,7 +16,6 @@ import Output from "../models/output";
 import Scope from "../models/scope";
 import Template from "../models/template";
 import User from "../models/user";
-import path from "path/posix";
 import { randomUUID } from "crypto";
 
 const createOutputValidationSchema = new Schema({

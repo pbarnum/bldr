@@ -1,5 +1,4 @@
 import storage from "./storage";
-import { ApiMessage } from "./types/api";
 import { ListUsersResp, LoginResp } from "./types/user";
 import { CreateTemplateResp, ListTemplatesResp } from "./types/template";
 import {
