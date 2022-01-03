@@ -18,7 +18,7 @@ jobs:
           heroku_app_name: "bldr-app"
           heroku_email: "patrickdbarnum@gmail.com"
           usedocker: true
-          healthcheck: https://bldr-app.heroku-app.com/api/v1/health
+          # healthcheck: https://bldr-app.heroku-app.com/api/v1/health
         env:
           NODE_ENV: production
           APP_NAME: bldr

@@ -6,7 +6,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: builder
     container_name: bldr-app
     env_file:
       - .env
