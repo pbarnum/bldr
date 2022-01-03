@@ -1,0 +1,25 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "bldr-app"
+          heroku_email: "patrickdbarnum@gmail.com"
+          usedocker: true
+        env:
+          NODE_ENV: production
+          APP_NAME: bldr
+          API_PORT: "80"
+          LOG_LEVEL: info
+          JWT_SESSION: "true"
+          JWT_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
