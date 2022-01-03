@@ -1,0 +1,180 @@
+@import "~bootstrap/scss/bootstrap";
+
+$grey-8: #888;
+$nav-size: 24px;
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.bldr-container {
+  height: calc(100vh - 73px);
+}
+
+.navbar {
+  flex-direction: column;
+  align-content: flex-start;
+  flex-wrap: unset;
+  align-items: unset;
+  justify-content: unset;
+}
+
+.nav-link {
+  display: inline-block;
+}
+
+.nav-pills .nav-link {
+  border-radius: unset;
+}
+
+.nav-item {
+  &:hover {
+    background-color: $grey-8;
+    color: $dark;
+  }
+
+  &>a {
+    &>.bldr-nav-drawer-text {
+      color: $dark;
+      font-size: $nav-size;
+    }
+
+    &.active>.bldr-nav-drawer-text {
+      color: $light;
+    }
+    &.active>.bldr-nav-drawer-icon {
+      color: $light;
+    }
+  }
+}
+
+.bldr-nav-drawer-icon {
+  height: $nav-size;
+  width: $nav-size;
+  margin-right: 15px;
+  color: $dark;
+
+  &>svg {
+    height: 100%;
+    width: 100% !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+.bldr-nav-drawer-button {
+  &:hover {
+    color: $grey-8;
+  }
+  color: $dark;
+}
+
+@mixin transition($direction, $seconds) {
+  transition: $direction $seconds linear;
+  @if $direction == "width" {
+    overflow-x: hidden;
+  } @else {
+    overflow-y: hidden;
+  }
+}
+
+.bldr-nav-drawer-in {
+  width: 56px;
+  min-width: 56px;
+  border-right-width: 2px;
+
+  @include transition(width, .15s);
+
+  & .nav-item {
+    width: 200px;
+  }
+
+  & > .bldr-drawer-button {
+    justify-content: center;
+  }
+}
+
+.bldr-nav-drawer-out {
+  width: 200px;
+  max-width: 200px;
+  border-right-width: 2px;
+
+  @include transition(width, .15s);
+}
+
+.bldr-import-shelf-in {
+  height: 0px;
+  overflow-x: hidden;
+  @include transition(height, .15s);
+}
+
+.bldr-import-shelf-out {
+  height: 50px;
+  overflow-x: hidden;
+  @include transition(height, .15s);
+}
+
+%scroll-shadow {
+  background:
+    /* Shadow Cover TOP */
+    linear-gradient(
+      dark 30%,
+      rgba(255, 255, 255, 0)
+    ) center top,
+
+    /* Shadow Cover BOTTOM */
+    linear-gradient(
+      rgba(255, 255, 255, 0),
+      dark 70%
+    ) center bottom,
+
+    /* Shadow TOP */
+    radial-gradient(
+      farthest-side at 50% 0,
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0)
+    ) center top,
+
+    /* Shadow BOTTOM */
+    radial-gradient(
+      farthest-side at 50% 100%,
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0)
+    ) center bottom;
+
+  background-repeat: no-repeat;
+  background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+  background-attachment: local, local, scroll, scroll;
+}
+
+.bldr-templates-table {
+  height: 200px;
+
+  & tr {
+    width: 100%;
+    display: inline-table;
+    table-layout: fixed;
+  }
+
+  & > tbody{
+    overflow-y: scroll;
+    max-height: 200px;
+    position: absolute;
+    margin-right: 15px;
+
+    @extend %scroll-shadow;
+  }
+}
+
+.bldr-template-contents {
+  height: 400px;
+  resize: none;
+}
+
+.tv-container {
+  max-height: 400px;
+  overflow-y: scroll;
+  @extend %scroll-shadow;
+}

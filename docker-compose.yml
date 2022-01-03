@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  app:
+    image: bldr
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    container_name: bldr-app
+    env_file:
+      - .env
+    volumes:
+      - "./:/app"
+      - "app-deps:/app/node_modules"
+    ports:
+      - "3000:3000"
+      - "8050:8050"
+
+  db:
+    image: postgres:14
+    container_name: bldr-db
+    environment:
+      POSTGRES_DB: bldr
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - "db-data:/var/lib/postgresql/data"
+
+volumes:
+  app-deps:
+  db-data:
