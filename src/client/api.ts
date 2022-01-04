@@ -11,7 +11,7 @@ import { newErrorAlert } from "./App";
 
 const baseUrl = (): URL => {
   const host = process.env.SERVER_HOST || "http://localhost";
-  const port = process.env.SERVER_PORT || "3000";
+  const port = process.env.PORT || "3000";
   return new URL(`${host}:${port}/api/v1`);
 };
 

@@ -15,13 +15,14 @@ jobs:
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "bldr-app"
-          heroku_email: "patrickdbarnum@gmail.com"
+          heroku_app_name: ${{ secrets.HEROKU_APP }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
           usedocker: true
           # healthcheck: https://bldr-app.heroku-app.com/api/v1/health
         env:
           # HD_* required to pass vars to heroku
           HD_NODE_ENV: production
+          HD_SERVER_HOST: https://${{ secrets.HEROKU_APP }}.herokuapp.com
           HD_APP_NAME: bldr
           HD_LOG_LEVEL: info
           HD_JWT_SESSION: "true"
