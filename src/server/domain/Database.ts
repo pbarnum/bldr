@@ -14,7 +14,12 @@ export default class Database {
     this.db = new Sequelize(url, {
       dialect: "postgres",
       dialectOptions: {
-        ssl: c.db.ssl,
+        ssl: c.db.ssl
+          ? {
+              require: true,
+              rejectUnauthorized: false,
+            }
+          : false,
       },
     });
   }
