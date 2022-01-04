@@ -114,7 +114,7 @@ export function AppConfigs(): Configs {
       name: process.env.APP_NAME as string,
     },
     api: {
-      port: Number(process.env.API_PORT),
+      port: Number(process.env.PORT || process.env.API_PORT),
     },
     log: {
       level: process.env.LOG_LEVEL as string,

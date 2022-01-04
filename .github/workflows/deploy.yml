@@ -23,7 +23,6 @@ jobs:
           # HD_* required to pass vars to heroku
           HD_NODE_ENV: production
           HD_APP_NAME: bldr
-          HD_API_PORT: "80"
           HD_LOG_LEVEL: info
           HD_JWT_SESSION: "true"
           HD_JWT_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
