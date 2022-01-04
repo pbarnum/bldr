@@ -22,7 +22,7 @@ jobs:
         env:
           # HD_* required to pass vars to heroku
           HD_NODE_ENV: production
-          HD_SERVER_HOST: https://${{ secrets.HEROKU_APP }}.herokuapp.com
+          HD_REACT_APP_SERVER_HOST: https://${{ secrets.HEROKU_APP }}.herokuapp.com
           HD_APP_NAME: bldr
           HD_LOG_LEVEL: info
           HD_JWT_SESSION: "true"

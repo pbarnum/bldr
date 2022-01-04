@@ -1,4 +1,6 @@
 import express from "express";
+import * as fs from "fs";
+import path from "path";
 import Database from "./domain/Database";
 import { AppConfigs, Configs } from "./domain/Configs";
 import App from "./App";
@@ -21,3 +23,29 @@ db.initialize()
     app.InitializeAndServe(express());
   })
   .catch(console.error);
+
+// Inject env vars into frontend ===============================================
+if (process.env.NODE_ENV === "production") {
+  setInterval(() => {
+    const template = path.join(__dirname, "../public", "_index.html");
+    const actual = path.join(__dirname, "../public", "index.html");
+
+    fs.readFile(template, (err, data) => {
+      if (err) {
+        console.error("failed to read template file:", err);
+        return;
+      }
+
+      const templateString = data
+        .toString("utf8")
+        .replace("{{SERVER_HOST}}", process.env.SERVER_HOST || "")
+        .replace("{{SERVER_PORT}}", process.env.SERVER_PORT || "");
+
+      fs.writeFile(actual, templateString, (err) => {
+        if (err) {
+          console.error("failed to write index file:", err);
+        }
+      });
+    });
+  }, 1000);
+}

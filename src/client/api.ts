@@ -9,9 +9,19 @@ import {
 } from "./types/output";
 import { newErrorAlert } from "./App";
 
+interface Server {
+  host: string;
+  port: string;
+}
+
+interface Window {
+  server: Server;
+}
+
 const baseUrl = (): URL => {
-  const host = process.env.SERVER_HOST || "http://localhost";
-  const port = process.env.PORT || "3000";
+  const host =
+    (window as unknown as Window)?.server?.host || "http://localhost";
+  const port = (window as unknown as Window)?.server?.port || "3000";
   return new URL(`${host}:${port}/api/v1`);
 };
 
