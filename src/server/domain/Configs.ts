@@ -60,6 +60,7 @@ interface Database {
   pass: string;
   name: string;
   url: string;
+  ssl: boolean;
 }
 
 const dbValidationSchema = new Schema({
@@ -84,6 +85,9 @@ const dbValidationSchema = new Schema({
   url: {
     type: String,
   },
+  ssl: {
+    type: Boolean,
+  },
 });
 
 export interface Configs {
@@ -97,9 +101,13 @@ export interface Configs {
 export function AppConfigs(): Configs {
   let jwtSession = process.env.JWT_SESSION as string;
   if (!jwtSession) {
-    throw [{ path: "session", message: "missing jwt session" }];
+    jwtSession = "false";
   }
-  jwtSession = jwtSession.toLowerCase();
+
+  let dbSsl = process.env.DB_SSL as string;
+  if (!dbSsl) {
+    dbSsl = "false";
+  }
 
   const c = {
     app: {
@@ -116,7 +124,7 @@ export function AppConfigs(): Configs {
         /\\n/gm,
         "\n"
       ),
-      session: jwtSession === "1" || jwtSession === "true",
+      session: jwtSession === "1" || jwtSession.toLowerCase() === "true",
     },
     db: {
       host: process.env.DB_HOST as string,
@@ -125,6 +133,7 @@ export function AppConfigs(): Configs {
       pass: process.env.DB_PASS as string,
       name: process.env.DB_NAME as string,
       url: process.env.DATABASE_URL as string,
+      ssl: dbSsl === "1" || dbSsl.toLowerCase() === "true",
     },
   };
 

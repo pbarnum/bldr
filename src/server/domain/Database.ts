@@ -11,7 +11,12 @@ export default class Database {
     const url = c.db.url
       ? c.db.url
       : `postgres://${c.db.user}:${c.db.pass}@${c.db.host}:${c.db.port}/${c.db.name}`;
-    this.db = new Sequelize(url);
+    this.db = new Sequelize(url, {
+      dialect: "postgres",
+      dialectOptions: {
+        ssl: c.db.ssl,
+      },
+    });
   }
 
   async initialize() {
