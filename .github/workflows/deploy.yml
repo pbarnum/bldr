@@ -27,3 +27,4 @@ jobs:
           HD_LOG_LEVEL: info
           HD_JWT_SESSION: "true"
           HD_JWT_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          HD_DB_SSL: "true"
