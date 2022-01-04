@@ -27,7 +27,7 @@ export default async (db: Sequelize): Promise<void> => {
     .catch(console.error);
 
   const user = await User.findOne({
-    where: { email: "patrickdbarnum@gmail.com" },
+    where: { email: "admin@bldr.com" },
   }).catch(console.error);
   if (!user) {
     throw "no user";
