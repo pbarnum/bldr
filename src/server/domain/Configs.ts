@@ -109,6 +109,10 @@ export function AppConfigs(): Configs {
     dbSsl = "false";
   }
 
+  const key = (process.env.JWT_PRIVATE_KEY as string)
+    .replace('"', "")
+    .replace(/\\n/gm, "\n");
+
   const c = {
     app: {
       name: process.env.APP_NAME as string,
@@ -120,10 +124,7 @@ export function AppConfigs(): Configs {
       level: process.env.LOG_LEVEL as string,
     },
     jwt: {
-      privateKey: (process.env.JWT_PRIVATE_KEY as string).replace(
-        /\\n/gm,
-        "\n"
-      ),
+      privateKey: key,
       session: jwtSession === "1" || jwtSession.toLowerCase() === "true",
     },
     db: {
