@@ -39,7 +39,7 @@ if (process.env.NODE_ENV === "production") {
       const templateString = data
         .toString("utf8")
         .replace("{{SERVER_HOST}}", process.env.SERVER_HOST || "")
-        .replace("{{SERVER_PORT}}", process.env.PORT || "");
+        .replace("{{SERVER_PORT}}", "80"); //process.env.PORT || "");
 
       fs.writeFile(actual, templateString, (err) => {
         if (err) {
