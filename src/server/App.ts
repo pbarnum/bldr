@@ -1,4 +1,5 @@
-import express, { Request, Response, Express, NextFunction } from "express";
+import express, { Request, Response, Express } from "express";
+import { HTTPS } from "express-sslify";
 import { initialize as initializePassport } from "./middlewares/auth";
 import { Configs } from "./domain/Configs";
 import Database from "./domain/Database";
@@ -17,15 +18,11 @@ export default class App {
 
   InitializeAndServe(api: Express): void {
     // Global Middleware
+    api.use(HTTPS({ trustProtoHeader: true }));
+
     api.use(initializePassport(this.configs));
     api.use(express.urlencoded({ extended: true }));
     api.use(express.json());
-
-    api.use("*", (req: Request, res: Response, next: NextFunction) => {
-      req.secure
-        ? next()
-        : res.redirect("https://" + req.headers.host + req.url);
-    });
 
     // Add Routes
     api.use(AppRouter(this.configs, this.db));
