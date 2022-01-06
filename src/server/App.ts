@@ -21,6 +21,12 @@ export default class App {
     api.use(express.urlencoded({ extended: true }));
     api.use(express.json());
 
+    api.use("*", (req: Request, res: Response) => {
+      if (req.protocol !== "https:") {
+        res.redirect(req.url.replace(req.protocol, "https:"));
+      }
+    });
+
     // Add Routes
     api.use(AppRouter(this.configs, this.db));
 
