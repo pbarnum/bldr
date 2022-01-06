@@ -27,7 +27,6 @@ export default class App {
     // Serve Frontend
     api.use("/dist", express.static(path.join(__dirname, "../public")));
     api.get("/*", (req: Request, res: Response) => {
-      console.log("sending index.html");
       // res.sendFile("/dist/index.html");
       res.sendFile(path.join(__dirname, "../public/index.html"));
     });
