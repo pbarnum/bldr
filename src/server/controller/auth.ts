@@ -19,7 +19,11 @@ const loginValidationSchema = new Schema({
 });
 
 const generateToken = async (pk: string, user: User): Promise<string> => {
-  const scopes = await user.getScopes();
+  const scopes = await user.getScopes().catch(console.error);
+  if (!scopes) {
+    return "";
+  }
+
   const payload = {
     scp: scopes.map((s) => s.name),
   };
@@ -74,6 +78,11 @@ export default (router: Router, configs: Configs): Router => {
 
     // User is good, generate JWTs
     const token = await generateToken(configs.jwt.privateKey, user);
+    if (token === "") {
+      Unauthorized(res);
+      return;
+    }
+
     res.status(200).json({ user, token });
   });
 
