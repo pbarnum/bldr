@@ -21,7 +21,7 @@ interface Window {
 const baseUrl = (): URL => {
   const host =
     (window as unknown as Window)?.server?.host || "http://localhost";
-  const port = (window as unknown as Window)?.server?.port || "3000";
+  const port = (window as unknown as Window)?.server?.port || "";
   return new URL(`${host}:${port}/api/v1`);
 };
 
