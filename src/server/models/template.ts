@@ -1,7 +1,7 @@
-import { Model, Sequelize, DataTypes } from "sequelize";
-import Output from "./output";
+import { DataTypes, Model, Sequelize } from 'sequelize';
+import Output from './output';
 
-const templateVariableRegex = new RegExp(/{[\w-]+}/, "mg");
+const templateVariableRegex = new RegExp(/{[\w-]+}/, 'mg');
 
 class Template extends Model {
   public id!: string;
@@ -29,10 +29,10 @@ export const Init = (db: Sequelize): void => {
           len: [3, 64],
         },
         get() {
-          return this.getDataValue("name").trim();
+          return this.getDataValue('name').trim();
         },
         set(s: string) {
-          this.setDataValue("name", s.trim());
+          this.setDataValue('name', s.trim());
         },
       },
       size: {
@@ -58,12 +58,7 @@ export const Init = (db: Sequelize): void => {
         get() {
           const matches = this.contents.match(templateVariableRegex);
           if (matches && matches.length > 0) {
-            return Object.keys(
-              matches.reduce(
-                (prev, cur) => Object.assign(prev, { [cur]: true }),
-                {}
-              )
-            ).length;
+            return Object.keys(matches.reduce((prev, cur) => Object.assign(prev, { [cur]: true }), {})).length;
           }
           return 0;
         },
@@ -83,8 +78,8 @@ export const Init = (db: Sequelize): void => {
     },
     {
       sequelize: db,
-      modelName: "template",
-      tableName: "templates",
+      modelName: 'template',
+      tableName: 'templates',
       paranoid: true,
     }
   );

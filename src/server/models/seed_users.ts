@@ -1,7 +1,7 @@
-import { randomUUID } from "crypto";
-import { Sequelize, QueryTypes } from "sequelize";
-import Role from "./role";
-import User from "./user";
+import { randomUUID } from 'crypto';
+import { QueryTypes, Sequelize } from 'sequelize';
+import Role from './role';
+import User from './user';
 
 export default async (db: Sequelize): Promise<void> => {
   await db
@@ -14,10 +14,10 @@ export default async (db: Sequelize): Promise<void> => {
         `,
         values: [
           randomUUID(),
-          "Patrick",
-          "Barnum",
-          "admin@bldr.com",
-          "$2a$10$Yu5xKpbAiROZl1gFWi/jxOCQhJjGp3Gw.zw/iWZXfSdYfwc5rVCS2",
+          'Patrick',
+          'Barnum',
+          'admin@bldr.com',
+          '$2a$10$Yu5xKpbAiROZl1gFWi/jxOCQhJjGp3Gw.zw/iWZXfSdYfwc5rVCS2',
           new Date(),
           new Date(),
         ],
@@ -27,17 +27,15 @@ export default async (db: Sequelize): Promise<void> => {
     .catch(console.error);
 
   const user = await User.findOne({
-    where: { email: "admin@bldr.com" },
+    where: { email: 'admin@bldr.com' },
   }).catch(console.error);
   if (!user) {
-    throw "no user";
+    throw 'no user';
   }
 
-  const role = await Role.findOne({ where: { name: Role.Admin } }).catch(
-    console.error
-  );
+  const role = await Role.findOne({ where: { name: Role.Admin } }).catch(console.error);
   if (!role) {
-    throw "no role";
+    throw 'no role';
   }
 
   await user.addRole(role).catch(console.error);

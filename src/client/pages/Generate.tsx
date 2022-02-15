@@ -1,30 +1,31 @@
-import React, { useEffect, useState } from "react";
-import Select, { SingleValue } from "react-select";
-import TemplateVariables from "../components/TemplateVariables";
-import * as Global from "../global";
-import api from "../api";
-import { AppContext, newErrorAlert, newSuccessAlert } from "../App";
-import { useOutletContext, useParams } from "react-router-dom";
-import { ApiMessage } from "../types/api";
-import { ListTemplatesResp, Template } from "../types/template";
-import Unauthorized from "../components/Unauthorized";
+import React, { useEffect, useState } from 'react';
+import { useOutletContext, useParams } from 'react-router-dom';
+import Select, { SingleValue } from 'react-select';
+import { AppContext, newErrorAlert, newSuccessAlert } from '../App';
+import api from '../api';
+import GenerateHeader from '../components/GenerateHeader';
+import TemplateVariables from '../components/TemplateVariables';
+import Unauthorized from '../components/Unauthorized';
+import storage from '../storage';
+import { ApiMessage } from '../types/api';
+import { TemplateOption, TemplateVariable, TemplateVariableRegex } from '../types/template';
+import { ListTemplatesResp, Template } from '../types/template';
 
 const Generate = (): React.ReactElement => {
   const { userId } = useParams();
   // const [progress, setProgress] = useState<number>(0);
   // const [compileError, setCompileError] = useState<boolean | null>(null);
-  const [templateOptions, setTemplateOptions] = useState<
-    Global.TemplateOption[]
-  >([]);
+  const [templateOptions, setTemplateOptions] = useState<TemplateOption[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
-  const [selectedTemplate, setSelectedTemplate] =
-    useState<Global.TemplateOption | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateOption | null>(null);
   // const [templateContents, setTemplateContents] = useState<string>("");
-  const [templateVariables, setTemplateVariables] = useState<
-    Global.TemplateVariable[]
-  >([]);
-  const [fileName, setFileName] = useState<string>("");
+  const [templateVariables, setTemplateVariables] = useState<TemplateVariable[]>([]);
+  const [fileName, setFileName] = useState<string>('');
   const ctx: AppContext = useOutletContext();
+
+  useEffect(() => {
+    document.title = 'Generate - Bldr';
+  }, []);
 
   useEffect(() => {
     if (!userId) {
@@ -35,15 +36,11 @@ const Generate = (): React.ReactElement => {
     // TODO: Figure out better way to select a template
     api.template
       .listTemplates(userId, 1, 1000)
-      .then((res: ListTemplatesResp) => {
-        const { templates } = res;
+      .then(({ templates }: ListTemplatesResp) => {
         setTemplates(templates);
-        const options = templates.reduce<Global.TemplateOption[]>(
-          (prev, current) => {
-            return [...prev, { label: current.name, value: current.id }];
-          },
-          []
-        );
+        const options = templates.reduce<TemplateOption[]>((prev, current) => {
+          return [...prev, { label: current.name, value: current.id }];
+        }, []);
         setTemplateOptions(options);
       })
       .catch((err: ApiMessage) => {
@@ -53,26 +50,24 @@ const Generate = (): React.ReactElement => {
       });
   }, [userId]);
 
-  const selectTemplateHandler = (
-    selected: SingleValue<Global.TemplateOption>
-  ) => {
+  const selectTemplateHandler = (selected: SingleValue<TemplateOption>) => {
     if (!selected) {
-      console.error("no template selected");
+      console.error('no template selected');
       return;
     }
 
     const template = templates.find((t) => t.id === selected.value);
     if (!template) {
-      console.error("cant find template");
+      console.error('cant find template');
       return;
     }
 
-    const data: Global.TemplateVariable[] = [];
-    const matches = template.contents.match(Global.TemplateVariableRegex);
+    const data: TemplateVariable[] = [];
+    const matches = template.contents.match(TemplateVariableRegex);
     if (matches && matches.length > 0) {
-      Object.keys(
-        matches.reduce((prev, cur) => Object.assign(prev, { [cur]: true }), {})
-      ).forEach((key) => data.push({ label: key, value: key }));
+      Object.keys(matches.reduce((prev, cur) => Object.assign(prev, { [cur]: true }), {})).forEach((key) =>
+        data.push({ label: key, value: key })
+      );
     }
     // setTemplateContents(template.contents);
     setSelectedTemplate(selected);
@@ -83,7 +78,7 @@ const Generate = (): React.ReactElement => {
   const compile = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     if (!ctx.user || !selectedTemplate) {
-      console.error("no user or template?", ctx.user, selectedTemplate);
+      console.error('no user or template?', ctx.user, selectedTemplate);
       return;
     }
 
@@ -92,7 +87,7 @@ const Generate = (): React.ReactElement => {
     // setProgress(0);
 
     if (!/^[\w-.]+$/.test(fileName)) {
-      console.error("bad file name", fileName);
+      console.error('bad file name', fileName);
       // setModalBody(dangerModalBody("File name is invalid"));
       // setCompileError(true);
       // setProgress(1);
@@ -101,12 +96,9 @@ const Generate = (): React.ReactElement => {
 
     // TODO: Validate template
     // setModalBody('Validating template...');
-    const vars: { [key: string]: string } = templateVariables.reduce(
-      (prev, current) => {
-        return Object.assign(prev, { [current.label]: current.value });
-      },
-      {}
-    );
+    const vars: { [key: string]: string } = templateVariables.reduce((prev, current) => {
+      return Object.assign(prev, { [current.label]: current.value });
+    }, {});
 
     api.output
       .createOutput(ctx.user.id, selectedTemplate.value, fileName, vars)
@@ -133,33 +125,20 @@ const Generate = (): React.ReactElement => {
     setFileName(name);
   };
 
-  if (!ctx.user || !userId) {
-    return (
-      <Unauthorized
-        title="Unauthorized"
-        message="You cannot generate files without being logged in!"
-      />
-    );
+  if (!ctx.user || !storage.isUser || !userId) {
+    return <Unauthorized title="Unauthorized" message="You cannot generate files without being logged in!" />;
   }
 
   return (
     <>
-      <div className="jumbotron">
-        <h1 className="display-4">Generate</h1>
-        <p className="lead">Generate files using available Templates.</p>
-        <hr className="my-4" />
-      </div>
+      <GenerateHeader />
       <div className="row align-items-end">
         <div className="col">
           <h3>Step #1</h3>
           <p className="mb-0">Select an available Template</p>
         </div>
         <div className="col">
-          <Select
-            value={selectedTemplate}
-            onChange={selectTemplateHandler}
-            options={templateOptions}
-          />
+          <Select value={selectedTemplate} onChange={selectTemplateHandler} options={templateOptions} />
         </div>
       </div>
       {selectedTemplate && (
@@ -173,19 +152,14 @@ const Generate = (): React.ReactElement => {
           </div>
           <div className="row">
             <div className="col tv-container border">
-              <TemplateVariables
-                variables={templateVariables}
-                onChange={onVariableChange}
-              />
+              <TemplateVariables variables={templateVariables} onChange={onVariableChange} />
             </div>
           </div>
           <hr className="my-4" />
           <div className="row align-items-end">
             <div className="col">
               <h3>Step #3</h3>
-              <p className="mb-0">
-                Compile the template with the provided variables
-              </p>
+              <p className="mb-0">Compile the template with the provided variables</p>
             </div>
             <div className="col">
               <label htmlFor="file-name" className="form-label">

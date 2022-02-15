@@ -1,19 +1,14 @@
-import { Request, Response, NextFunction, Handler } from "express";
-import { JwtPayload } from "jsonwebtoken";
-import passport from "passport";
-import passportJWT from "passport-jwt";
-import { Configs } from "../domain/Configs";
-import {
-  BadRequest,
-  Forbidden,
-  InternalServerError,
-  Unauthorized,
-} from "../domain/Response";
-import User from "../models/user";
+import { Handler, NextFunction, Request, Response } from 'express';
+import { JwtPayload } from 'jsonwebtoken';
+import passport from 'passport';
+import passportJWT from 'passport-jwt';
+import { Configs } from '../domain/Configs';
+import { BadRequest, Forbidden, InternalServerError, Unauthorized } from '../domain/Response';
+import User from '../models/user';
 
-export const JwtAudience = "bldr-fe";
-export const JwtIssuer = "bldr-be";
-export const JwtAlgorithm = "RS256";
+export const JwtAudience = 'bldr-fe';
+export const JwtIssuer = 'bldr-be';
+export const JwtAlgorithm = 'RS256';
 
 const getUserFromAuthPayload = async (
   req: Request,
@@ -50,8 +45,7 @@ const testScope = async (req: Request, requiredScope: string) => {
   return false;
 };
 
-const testRequestForScope = (req: Request, requiredScope: string) =>
-  testUserId(req) && testScope(req, requiredScope);
+const testRequestForScope = (req: Request, requiredScope: string) => testUserId(req) && testScope(req, requiredScope);
 
 export const initialize = (configs: Configs) => {
   const params = {
@@ -73,7 +67,7 @@ export const initialize = (configs: Configs) => {
 };
 
 export const authenticate = (configs: Configs): Handler =>
-  passport.authenticate("jwt", {
+  passport.authenticate('jwt', {
     session: configs.jwt.session,
     failWithError: true,
   });
@@ -87,23 +81,11 @@ export const authenticate = (configs: Configs): Handler =>
 //   console.error
 // );
 
-export const verifyScopes = async (
-  requiredScope: string,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  return (await testRequestForScope(req, requiredScope))
-    ? next()
-    : Unauthorized(res);
+export const verifyScopes = async (requiredScope: string, req: Request, res: Response, next: NextFunction) => {
+  return (await testRequestForScope(req, requiredScope)) ? next() : Unauthorized(res);
 };
 
-export const errorHandler = (
-  err: unknown,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const errorHandler = (err: unknown, req: Request, res: Response, next: NextFunction) => {
   if (err) {
     console.error(err);
   }

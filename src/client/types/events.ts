@@ -1,4 +1,4 @@
 export enum events {
-  loggedIn = "loggedIn",
-  loggedOut = "loggedOut",
+  loggedIn = 'loggedIn',
+  loggedOut = 'loggedOut',
 }

@@ -1,19 +1,19 @@
 import {
-  Model,
-  Sequelize,
   DataTypes,
-  HasManyGetAssociationsMixin,
   HasManyAddAssociationMixin,
-  HasManyHasAssociationMixin,
   HasManyCountAssociationsMixin,
   HasManyCreateAssociationMixin,
-} from "sequelize";
-import Scope from "./scope";
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  Model,
+  Sequelize,
+} from 'sequelize';
+import Scope from './scope';
 
 class Role extends Model {
-  static Admin = "admin";
-  static User = "user";
-  static Guest = "guest";
+  static Admin = 'admin';
+  static User = 'user';
+  static Guest = 'guest';
 
   public id!: string;
   public name!: string;
@@ -57,8 +57,8 @@ export const Init = (db: Sequelize): void => {
     },
     {
       sequelize: db,
-      modelName: "role",
-      tableName: "roles",
+      modelName: 'role',
+      tableName: 'roles',
     }
   );
 };

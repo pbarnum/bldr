@@ -1,30 +1,30 @@
 import {
-  Model,
-  Sequelize,
   DataTypes,
-  HasManyGetAssociationsMixin,
   HasManyAddAssociationMixin,
-  HasManyHasAssociationMixin,
   HasManyCountAssociationsMixin,
   HasManyCreateAssociationMixin,
-} from "sequelize";
-import Role from "./role";
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  Model,
+  Sequelize,
+} from 'sequelize';
+import Role from './role';
 
 class Scope extends Model {
-  static CreateUser = "createUser";
-  static UpdateUser = "updateUser";
-  static ListUsers = "listUsers";
-  static GetUser = "getUser";
-  static DeleteUser = "deleteUser";
-  static CreateTemplate = "createTemplate";
-  static UpdateTemplate = "updateTemplate";
-  static ListTemplates = "listTemplates";
-  static GetTemplate = "getTemplate";
-  static DeleteTemplate = "deleteTemplate";
-  static CreateOutput = "createOutput";
-  static ListOutputs = "listOutputs";
-  static GetOutput = "getOutput";
-  static DeleteOutput = "deleteOutput";
+  static CreateUser = 'createUser';
+  static UpdateUser = 'updateUser';
+  static ListUsers = 'listUsers';
+  static GetUser = 'getUser';
+  static DeleteUser = 'deleteUser';
+  static CreateTemplate = 'createTemplate';
+  static UpdateTemplate = 'updateTemplate';
+  static ListTemplates = 'listTemplates';
+  static GetTemplate = 'getTemplate';
+  static DeleteTemplate = 'deleteTemplate';
+  static CreateOutput = 'createOutput';
+  static ListOutputs = 'listOutputs';
+  static GetOutput = 'getOutput';
+  static DeleteOutput = 'deleteOutput';
 
   public id!: string;
   public name!: string;
@@ -56,8 +56,8 @@ export const Init = (db: Sequelize): void => {
     },
     {
       sequelize: db,
-      modelName: "scope",
-      tableName: "scopes",
+      modelName: 'scope',
+      tableName: 'scopes',
     }
   );
 };

@@ -1,53 +1,43 @@
-import React, { useEffect, useState } from "react";
-import TemplatesTable from "./TemplatesTable";
-import Spinner from "./Spinner";
-import { ApiMessage } from "../types/api";
-import api from "../api";
-import storage from "../storage";
-import { AppContext, newErrorAlert } from "../App";
-import { ListTemplatesResp, Template } from "../types/template";
-import { useOutletContext } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
+import { AppContext, newErrorAlert } from '../App';
+import api from '../api';
+import storage from '../storage';
+import { ApiMessage, Pagination as PaginationObj } from '../types/api';
+import { ListTemplatesResp, Template } from '../types/template';
+import Pagination from './Pagination';
+import Spinner from './Spinner';
+import TemplatesTable from './TemplatesTable';
 
 export interface AvailableTemplatesProps {
   userId: string;
   selectedCallback?: (template: Template | null) => void;
 }
 
-const AvailableTemplates = (
-  props: AvailableTemplatesProps
-): React.ReactElement => {
+const AvailableTemplates = (props: AvailableTemplatesProps): React.ReactElement => {
+  const isAdmin = storage.isAdmin;
   const ctx: AppContext = useOutletContext();
-  const [page] = useState(1);
-  const [limit] = useState(25);
-  // const [archived, setArchived] = useState(false);
-  // const [pagination, setPagination] = useState<Pagination>();
   const [loading, setLoading] = useState<boolean>(true);
   const [templateList, setTemplateList] = useState<Template[]>([]);
-
-  // const importTemplate = (e: React.MouseEvent<HTMLAnchorElement>) => {
-  //   e.preventDefault();
-  //   window.api.send(Global.Events.OpenFileDialog);
-  // };
-
-  // TODO: Add ability to make templates in app?
-  // TODO: Ability to validate templates?
-  // const validateAndSave = () => {};
-  // const validate = () => {};
-  // const save = () => {};
+  const [tablePagination, setTablePagination] = useState<PaginationObj>();
+  const page = ctx.uri.page || 1;
+  const limit = ctx.uri.limit || 5;
+  const archived = ctx.uri.archived || false;
 
   useEffect(() => {
     const currentUser = ctx.user;
     if (!currentUser || !(currentUser.id === props.userId || storage.isAdmin)) {
-      ctx.setAlert(newErrorAlert("You need to log in to view templates."));
+      ctx.setAlert(newErrorAlert('You need to log in to view templates.'));
       return;
     }
 
+    setLoading(true);
+
     api.template
-      .listTemplates(props.userId, page, limit)
-      .then((res: ListTemplatesResp) => {
-        const { templates } = res;
+      .listTemplates(props.userId, page, limit, archived)
+      .then(({ templates, pagination }: ListTemplatesResp) => {
         setTemplateList(templates);
-        // setPagination(pagination);
+        setTablePagination(pagination);
       })
       .catch((err: ApiMessage) => {
         ctx.setAlert(newErrorAlert(err.message));
@@ -55,7 +45,7 @@ const AvailableTemplates = (
       .finally(() => {
         setLoading(false);
       });
-  }, [props.userId]);
+  }, [props.userId, page, limit, archived]);
 
   const rowClick = (template: Template, isSelected: boolean) => {
     if (props.selectedCallback) {
@@ -67,12 +57,16 @@ const AvailableTemplates = (
     <>
       <div className="row">
         <div className="col">
-          {loading ? (
-            <Spinner />
-          ) : (
-            <TemplatesTable templateList={templateList} onClick={rowClick} />
-          )}
+          <h3>Available Templates</h3>
         </div>
+      </div>
+      <div className="row">
+        <div className="col">
+          {loading ? <Spinner /> : <TemplatesTable isAdmin={isAdmin} templateList={templateList} onClick={rowClick} />}
+        </div>
+      </div>
+      <div className="row">
+        <div className="col">{tablePagination ? <Pagination pagination={tablePagination} /> : <></>}</div>
       </div>
     </>
   );

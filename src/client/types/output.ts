@@ -1,6 +1,6 @@
-import { Pagination } from "./api";
-import { Template } from "./template";
-import { User } from "./user";
+import { Pagination } from './api';
+import { Template } from './template';
+import { User } from './user';
 
 export interface Output {
   id: string;

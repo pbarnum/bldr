@@ -1,4 +1,4 @@
-import { Model, Sequelize, DataTypes } from "sequelize";
+import { DataTypes, Model, Sequelize } from 'sequelize';
 
 class UserLock extends Model {
   public id!: string;
@@ -21,8 +21,8 @@ export const Init = (db: Sequelize): void => {
     },
     {
       sequelize: db,
-      modelName: "userLock",
-      tableName: "user_locks",
+      modelName: 'userLock',
+      tableName: 'user_locks',
     }
   );
 };

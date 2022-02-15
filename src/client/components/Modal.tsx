@@ -1,40 +1,32 @@
-// import React from 'react';
+import React from 'react';
+import { Modal as BsModal } from 'react-bootstrap';
 
-// export interface ModalProps {
-//   title: string;
-//   body: React.ReactElement | string;
-//   buttonText?: string;
-//   onClose?: () => void;
-// }
+export interface ModalProps {
+  title: string;
+  body: string;
+  show: boolean;
+  success?: boolean;
+  onCancel?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onOk?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+}
 
-// const bodyOrString = (body: React.ReactElement | string) => {
-//   if (React.isValidElement(body)) {
-//     return body;
-//   }
-//   return <p>{body}</p>;
-// };
+const Modal = (props: ModalProps): React.ReactElement => {
+  return (
+    <BsModal show={props.show}>
+      <BsModal.Header>{props.title}</BsModal.Header>
+      <BsModal.Body>
+        <p>{props.body}</p>
+      </BsModal.Body>
+      <BsModal.Footer>
+        <button className={'btn btn-' + (props.success === true ? 'success' : 'danger')} onClick={props.onOk}>
+          Confirm
+        </button>
+        <button className="btn btn-secondary" onClick={props.onCancel}>
+          Cancel
+        </button>
+      </BsModal.Footer>
+    </BsModal>
+  );
+};
 
-// const Modal = (props: ModalProps): React.ReactElement => {
-//   const body = bodyOrString(props.body);
-
-//   return (
-//     <div className="modal" tabIndex={-1}>
-//       <div className="modal-dialog">
-//         <div className="modal-content">
-//           <div className="modal-header">
-//             <h5 className="modal-title">{props.title}</h5>
-//             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-//           </div>
-//           <div className="modal-body">{body}</div>
-//           <div className="modal-footer">
-//             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => props.onClose()}>
-//               {props.buttonText || 'Close'}
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Modal;
+export default Modal;

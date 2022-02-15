@@ -8,3 +8,8 @@ export interface Archived {
 }
 
 export type ListResourcesQP = Pagination & Archived;
+
+export interface Verify {
+  email: string;
+  token: string;
+}

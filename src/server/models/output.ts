@@ -1,4 +1,4 @@
-import { Model, Sequelize, DataTypes } from "sequelize";
+import { DataTypes, Model, Sequelize } from 'sequelize';
 
 class Output extends Model {
   public id!: string;
@@ -32,10 +32,10 @@ export const Init = (db: Sequelize): void => {
           len: [3, 64],
         },
         get() {
-          return this.getDataValue("name").trim();
+          return this.getDataValue('name').trim();
         },
         set(s: string) {
-          this.setDataValue("name", s.trim());
+          this.setDataValue('name', s.trim());
         },
       },
       contents: {
@@ -48,8 +48,8 @@ export const Init = (db: Sequelize): void => {
     },
     {
       sequelize: db,
-      modelName: "output",
-      tableName: "outputs",
+      modelName: 'output',
+      tableName: 'outputs',
       paranoid: true,
     }
   );
