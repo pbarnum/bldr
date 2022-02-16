@@ -1,41 +1,38 @@
-import { User } from "./types/user";
-import EventEmitter from "./events";
-import { events } from "./types/events";
-import jwt from "jwt-decode";
+import jwt from 'jwt-decode';
+import EventEmitter from './events';
+import { events } from './types/events';
+import { User } from './types/user';
 
 enum keys {
-  token = "token",
-  user = "user",
+  token = 'token',
+  user = 'user',
 }
 
 // TODO: Centralize this enum
 export enum scope {
-  createUser = "createUser",
-  updateUser = "updateUser",
-  listUsers = "listUsers",
-  getUser = "getUser",
-  deleteUser = "deleteUser",
-  createTemplate = "createTemplate",
-  updateTemplate = "updateTemplate",
-  listTemplates = "listTemplates",
-  getTemplate = "getTemplate",
-  deleteTemplate = "deleteTemplate",
-  createOutput = "createOutput",
-  listOutputs = "listOutputs",
-  getOutput = "getOutput",
-  deleteOutput = "deleteOutput",
+  createUser = 'createUser',
+  updateUser = 'updateUser',
+  listUsers = 'listUsers',
+  getUser = 'getUser',
+  deleteUser = 'deleteUser',
+  createTemplate = 'createTemplate',
+  updateTemplate = 'updateTemplate',
+  listTemplates = 'listTemplates',
+  getTemplate = 'getTemplate',
+  deleteTemplate = 'deleteTemplate',
+  createOutput = 'createOutput',
+  listOutputs = 'listOutputs',
+  getOutput = 'getOutput',
+  deleteOutput = 'deleteOutput',
 }
 
-const adminScopes = [
-  scope.createUser,
-  scope.updateUser,
-  scope.listUsers,
+const userScopes = [
   scope.getUser,
-  scope.deleteUser,
+  scope.updateUser,
   scope.createTemplate,
+  scope.getTemplate,
   scope.updateTemplate,
   scope.listTemplates,
-  scope.getTemplate,
   scope.deleteTemplate,
   scope.createOutput,
   scope.listOutputs,
@@ -43,12 +40,13 @@ const adminScopes = [
   scope.deleteOutput,
 ];
 
+const adminScopes = [...userScopes, scope.createUser, scope.listUsers, scope.deleteUser];
+
 interface jwtScope {
   scp: string[];
 }
 
-const containsAll = (arr: string[], other: string[]) =>
-  other.every((v) => arr.includes(v));
+const containsAll = (arr: string[], other: string[]) => other.every((v) => arr.includes(v));
 
 export default {
   set token(token: string) {
@@ -57,14 +55,14 @@ export default {
   get token(): string {
     const t = localStorage.getItem(keys.token);
     if (!t) {
-      return "";
+      return '';
     }
     return t;
   },
 
   set user(user: User | undefined) {
     if (!user) {
-      localStorage.setItem(keys.user, "");
+      localStorage.setItem(keys.user, '');
       return;
     }
     localStorage.setItem(keys.user, JSON.stringify(user));
@@ -84,7 +82,7 @@ export default {
   },
 
   logout: function () {
-    this.token = "";
+    this.token = '';
     this.user = undefined;
     EventEmitter.emit(events.loggedOut);
   },
@@ -96,6 +94,15 @@ export default {
     }
     const decoded = jwt<jwtScope>(token);
     return decoded && decoded.scp && containsAll(decoded.scp, adminScopes);
+  },
+
+  get isUser(): boolean {
+    const token = this.token;
+    if (!token) {
+      return false;
+    }
+    const decoded = jwt<jwtScope>(token);
+    return decoded && decoded.scp && containsAll(decoded.scp, userScopes);
   },
 
   hasScope: function (scope: string): boolean {

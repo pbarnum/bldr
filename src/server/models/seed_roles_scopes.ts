@@ -1,5 +1,5 @@
-import Role from "./role";
-import Scope from "./scope";
+import Role from './role';
+import Scope from './scope';
 
 export default async (): Promise<void> => {
   const userRoles = [
@@ -16,12 +16,7 @@ export default async (): Promise<void> => {
     Scope.DeleteOutput,
   ];
   const scopes = {
-    [Role.Admin]: [
-      ...userRoles,
-      Scope.CreateUser,
-      Scope.ListUsers,
-      Scope.DeleteUser,
-    ],
+    [Role.Admin]: [...userRoles, Scope.CreateUser, Scope.ListUsers, Scope.DeleteUser],
     [Role.User]: userRoles,
     [Role.Guest]: [],
   };
@@ -29,22 +24,18 @@ export default async (): Promise<void> => {
   // Save Scopes
   const savedScopes = await Scope.bulkCreate(
     scopes[Role.Admin].map((s) => ({ name: s })),
-    { updateOnDuplicate: ["updatedAt"] }
+    { updateOnDuplicate: ['updatedAt'] }
   ).catch((err) => {
     console.error(err);
     throw err;
   });
   if (!savedScopes) {
-    throw "nope";
+    throw 'nope';
   }
 
-  const roles = [
-    { name: Role.Admin },
-    { name: Role.User },
-    { name: Role.Guest },
-  ];
+  const roles = [{ name: Role.Admin }, { name: Role.User }, { name: Role.Guest }];
   const savedRoles = await Role.bulkCreate(roles, {
-    updateOnDuplicate: ["updatedAt"],
+    updateOnDuplicate: ['updatedAt'],
   }).catch((err) => {
     console.error(err);
     throw err;

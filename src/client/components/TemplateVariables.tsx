@@ -1,34 +1,28 @@
-import React from "react";
-import * as Global from "../global";
+import React from 'react';
+import { TemplateVariable } from '../types/template';
 
 export interface TemplateVariablesProps {
-  variables: Global.TemplateVariable[];
+  variables: TemplateVariable[];
   onChange: (label: string, value: string) => void;
 }
 
-const TemplateVariables = (
-  props: TemplateVariablesProps
-): React.ReactElement => {
+const TemplateVariables = (props: TemplateVariablesProps): React.ReactElement => {
   const columns = 3;
   return (
     <>
       {props.variables
-        .reduce<Global.TemplateVariable[][]>((prev, cur, i) => {
+        .reduce<TemplateVariable[][]>((prev, cur, i) => {
           if (i % columns === 0) {
             prev.push([]);
           }
           prev[prev.length - 1].push(cur);
           return prev;
         }, [])
-        .map((group: Global.TemplateVariable[], i) => (
+        .map((group: TemplateVariable[], i) => (
           <div className="row mb-3" key={`tv-row-${i}`}>
-            {group.map((variable: Global.TemplateVariable, j) => (
+            {group.map((variable: TemplateVariable, j) => (
               <div className="col" key={`tv-col-${i}-${j}`}>
-                <label
-                  key={`tv-label-${i}-${j}`}
-                  htmlFor={`var-${i}-${j}`}
-                  className="form-label"
-                >
+                <label key={`tv-label-${i}-${j}`} htmlFor={`var-${i}-${j}`} className="form-label">
                   {variable.label}
                 </label>
                 <input
@@ -36,9 +30,7 @@ const TemplateVariables = (
                   id={`var-${i}-${j}`}
                   className="form-control"
                   defaultValue={variable.value}
-                  onChange={(e) =>
-                    props.onChange(variable.label, e.target.value)
-                  }
+                  onChange={(e) => props.onChange(variable.label, e.target.value)}
                 />
               </div>
             ))}

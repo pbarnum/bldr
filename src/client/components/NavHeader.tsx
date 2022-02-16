@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { User } from "../types/user";
-import EventEmitter from "../events";
-import { events } from "../types/events";
-import storage from "../storage";
-import api from "../api";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import api from '../api';
+import EventEmitter from '../events';
+import storage from '../storage';
+import { events } from '../types/events';
+import { User } from '../types/user';
 
-const Header = (): React.ReactElement => {
+const NavHeader = (): React.ReactElement => {
   const [user, setUser] = useState<User | undefined>();
   const navigate = useNavigate();
 
@@ -26,17 +26,14 @@ const Header = (): React.ReactElement => {
   }, []);
 
   const onLogout = async () => {
-    await api.logout();
-    navigate("/");
+    await api.auth.logout();
+    navigate('/');
   };
 
   const headerLinks = user ? (
     <>
-      <Link
-        to={`/users/${user.id}`}
-        className="nav-link"
-      >{`${user.firstName} ${user.lastName}`}</Link>
-      {" | "}
+      <Link to={`/users/${user.id}`} className="nav-link">{`${user.firstName} ${user.lastName}`}</Link>
+      {' | '}
       <Link to="/" className="nav-link" onClick={onLogout}>
         Logout
       </Link>
@@ -57,4 +54,4 @@ const Header = (): React.ReactElement => {
   );
 };
 
-export default Header;
+export default NavHeader;

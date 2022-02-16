@@ -1,22 +1,18 @@
-import * as fs from "fs";
-import { Request, Response, Router } from "express";
-import * as expressCore from "express-serve-static-core";
-import Schema from "validate";
-import pagination from "./pagination";
-import { ListResourcesQP } from "./queryParams";
-import {
-  BadRequest,
-  InternalServerError,
-  NotFound,
-  WriteResponse,
-} from "../domain/Response";
-import Generator from "../domain/Generator";
-import { verifyScopes } from "../middlewares/auth";
-import Output from "../models/output";
-import Scope from "../models/scope";
-import Template from "../models/template";
-import User from "../models/user";
-import { randomUUID } from "crypto";
+import { randomUUID } from 'crypto';
+import { Request, Response, Router } from 'express';
+import * as expressCore from 'express-serve-static-core';
+import * as fs from 'fs';
+import Schema from 'validate';
+import Generator from '../domain/Generator';
+import { strToBool } from '../domain/Request';
+import { BadRequest, InternalServerError, NotFound, WriteResponse } from '../domain/Response';
+import { verifyScopes } from '../middlewares/auth';
+import Output from '../models/output';
+import Scope from '../models/scope';
+import Template from '../models/template';
+import User from '../models/user';
+import pagination from './pagination';
+import { ListResourcesQP } from './queryParams';
 
 const createOutputValidationSchema = new Schema({
   name: {
@@ -46,16 +42,12 @@ const listOutputs = async (
     limit = 25;
   }
 
-  const user =
-    (req.user as User) ||
-    (await User.findByPk(req.params.userId).catch(console.error));
+  const user = (req.user as User) || (await User.findByPk(req.params.userId).catch(console.error));
   if (!user) {
     return NotFound(res);
   }
 
-  // FIXME: Query param should be type 'boolean'. This is missing edge cases (1/0/'TRUE'/etc)
-  const paranoid =
-    !req.query.archived || req.query.archived.toLowerCase() === "false";
+  const paranoid = !strToBool(req.query.archived);
   let where = {};
   if (req.params.templateId) {
     where = Object.assign(where, { templateId: req.params.templateId });
@@ -89,35 +81,20 @@ const listOutputs = async (
 
 export default (router: Router): Router => {
   router
-    .get(
-      "/users/:userId/templates/:templateId/outputs",
-      verifyScopes.bind(router, Scope.ListOutputs)
-    )
-    .post(
-      "/users/:userId/templates/:templateId/outputs",
-      verifyScopes.bind(router, Scope.CreateOutput)
-    )
-    .get(
-      "/users/:userId/templates/:templateId/outputs/:outputId",
-      verifyScopes.bind(router, Scope.GetOutput)
-    )
-    .get(
-      "/users/:userId/templates/:templateId/outputs/:outputId/download",
-      verifyScopes.bind(router, Scope.GetOutput)
-    )
-    .delete(
-      "/users/:userId/templates/:templateId/outputs/:outputId",
-      verifyScopes.bind(router, Scope.DeleteOutput)
-    )
+    .get('/users/:userId/templates/:templateId/outputs', verifyScopes.bind(router, Scope.ListOutputs))
+    .post('/users/:userId/templates/:templateId/outputs', verifyScopes.bind(router, Scope.CreateOutput))
+    .get('/users/:userId/templates/:templateId/outputs/:outputId', verifyScopes.bind(router, Scope.GetOutput))
+    .get('/users/:userId/templates/:templateId/outputs/:outputId/download', verifyScopes.bind(router, Scope.GetOutput))
+    .delete('/users/:userId/templates/:templateId/outputs/:outputId', verifyScopes.bind(router, Scope.DeleteOutput))
     .patch(
-      "/users/:userId/templates/:templatId/outputs/:outputId/restore",
+      '/users/:userId/templates/:templatId/outputs/:outputId/restore',
       verifyScopes.bind(router, Scope.DeleteOutput)
     );
 
-  router.route("/users/:userId/outputs").get(listOutputs);
+  router.route('/users/:userId/outputs').get(listOutputs);
 
   router
-    .route("/users/:userId/templates/:templateId/outputs")
+    .route('/users/:userId/templates/:templateId/outputs')
     .get(listOutputs)
     .post(async (req: Request, res: Response) => {
       const body = req.body;
@@ -164,7 +141,7 @@ export default (router: Router): Router => {
     });
 
   router
-    .route("/users/:userId/templates/:templateId/outputs/:outputId")
+    .route('/users/:userId/templates/:templateId/outputs/:outputId')
     .get(async (req: Request, res: Response) => {
       const output = await Output.findOne({
         where: {
@@ -181,9 +158,7 @@ export default (router: Router): Router => {
       WriteResponse(res, 200, { output });
     })
     .delete(async (req: Request, res: Response) => {
-      const user =
-        (req.user as User) ||
-        (await User.findByPk(req.params.userId).catch(console.error));
+      const user = (req.user as User) || (await User.findByPk(req.params.userId).catch(console.error));
       if (!user) {
         return NotFound(res);
       }
@@ -196,7 +171,7 @@ export default (router: Router): Router => {
         where = Object.assign(where, { userId: user.id });
       }
 
-      const output = await Output.findOne({ where });
+      const output = await Output.findOne({ where }).catch(console.error);
       if (!output) {
         return NotFound(res);
       }
@@ -207,7 +182,7 @@ export default (router: Router): Router => {
     });
 
   router
-    .route("/users/:userId/templates/:templateId/outputs/:outputId/download")
+    .route('/users/:userId/templates/:templateId/outputs/:outputId/download')
     .get(async (req: Request, res: Response) => {
       const output = await Output.findOne({
         where: {
@@ -221,9 +196,8 @@ export default (router: Router): Router => {
         return NotFound(res);
       }
 
-      const fileName =
-        output.name + (output.name.split(".").length === 1 ? ".txt" : "");
-      const savedFilePath = "/tmp/" + randomUUID();
+      const fileName = output.name + (output.name.split('.').length === 1 ? '.txt' : '');
+      const savedFilePath = '/tmp/' + randomUUID();
 
       fs.promises
         .writeFile(savedFilePath, output.contents)
@@ -249,11 +223,9 @@ export default (router: Router): Router => {
     });
 
   router
-    .route("/users/:userId/templates/:templateId/outputs/:outputId/restore")
+    .route('/users/:userId/templates/:templateId/outputs/:outputId/restore')
     .patch(async (req: Request, res: Response) => {
-      const user =
-        (req.user as User) ||
-        (await User.findByPk(req.params.userId).catch(console.error));
+      const user = (req.user as User) || (await User.findByPk(req.params.userId).catch(console.error));
       if (!user) {
         return NotFound(res);
       }

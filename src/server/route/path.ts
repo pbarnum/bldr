@@ -1,50 +1,65 @@
-import { Path, Route } from "../domain/Path";
+import { Path, Route } from '../domain/Path';
 
-const uuid = "[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}";
+const uuid = '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}';
 
 const path = (url: string): Route => {
   const allRoutes: Path = {
-    "^/health|ready$": {
-      methods: ["GET"],
+    '^/health|ready$': {
+      methods: ['GET'],
     },
-    "^/login$": {
-      methods: ["POST"],
+    '^/login$': {
+      methods: ['POST'],
     },
-    "^/logout$": {
-      methods: ["GET"],
+    '^/logout$': {
+      methods: ['GET'],
     },
-    "^/users$": {
-      methods: ["POST", "GET"],
+    '^/verify$': {
+      methods: ['GET'],
+    },
+    '^/reset$': {
+      methods: ['POST'],
+    },
+    '^/passwordreset$': {
+      methods: ['POST'],
+    },
+    '^/roles$': {
+      methods: ['GET'],
+    },
+    '^/users$': {
+      methods: ['POST', 'GET'],
     },
     [`^/users/${uuid}$`]: {
-      methods: ["GET", "PUT", "DELETE"],
+      methods: ['GET', 'PATCH', 'DELETE'],
     },
     [`^/users/${uuid}/restore$`]: {
-      methods: ["PATCH"],
+      methods: ['PATCH'],
     },
     [`^/users/${uuid}/templates$`]: {
-      methods: ["POST", "GET"],
+      methods: ['POST', 'GET'],
     },
     [`^/users/${uuid}/templates/${uuid}$`]: {
-      methods: ["GET", "PUT", "DELETE"],
+      methods: ['GET', 'PUT', 'DELETE'],
+    },
+    [`^/users/${uuid}/templates/${uuid}/download$`]: {
+      methods: ['GET'],
     },
     [`^/users/${uuid}/templates/${uuid}/restore$`]: {
-      methods: ["PATCH"],
+      methods: ['PATCH'],
     },
     [`^/users/${uuid}/templates/${uuid}/outputs$`]: {
-      methods: ["POST", "GET"],
+      methods: ['POST', 'GET'],
     },
     [`^/users/${uuid}/outputs$`]: {
-      methods: ["GET"],
+      methods: ['GET'],
     },
     [`^/users/${uuid}/templates/${uuid}/outputs/${uuid}/download$`]: {
-      methods: ["GET"],
+      methods: ['GET'],
     },
     [`^/users/${uuid}/templates/${uuid}/outputs/${uuid}$`]: {
-      methods: ["GET", "DELETE"],
+      methods: ['GET', 'DELETE'],
     },
     [`^/users/${uuid}/templates/${uuid}/outputs/${uuid}/restore$`]: {
-      methods: ["PATCH"],
+      methods: ['PATCH'],
     },
   };
 

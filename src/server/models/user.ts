@@ -1,17 +1,19 @@
+import * as bcrypt from 'bcryptjs';
 import {
-  Model,
-  Sequelize,
   DataTypes,
-  QueryTypes,
-  HasManyGetAssociationsMixin,
   HasManyAddAssociationMixin,
-  HasManyHasAssociationMixin,
   HasManyCountAssociationsMixin,
   HasManyCreateAssociationMixin,
-} from "sequelize";
-import * as bcrypt from "bcryptjs";
-import Role from "./role";
-import Scope from "./scope";
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  Model,
+  QueryTypes,
+  Sequelize,
+} from 'sequelize';
+import Output from './output';
+import Role from './role';
+import Scope from './scope';
+import Template from './template';
 
 const saltRounds = 10;
 
@@ -19,9 +21,13 @@ class User extends Model {
   public id!: string;
   public firstName!: string;
   public lastName!: string;
+  public name!: string;
   public email!: string;
   public password!: string;
   public loginAttempts!: number;
+  public resetToken!: string | null;
+  public verifyToken!: string | null;
+  public verifiedAt!: Date | null;
 
   comparePassword(p: string): boolean {
     return bcrypt.compareSync(p, this.password);
@@ -86,6 +92,51 @@ class User extends Model {
     return roles.some((r) => r.name === Role.Admin);
   }
 
+  async mergeRoles(roles: Role[] | undefined): Promise<void> {
+    if (!roles || roles.length === 0) {
+      return;
+    }
+
+    await this.sequelize
+      .query(
+        {
+          query: `
+            DELETE FROM "user_roles"
+            WHERE "userId" = ? AND "roleId" NOT IN (
+              SELECT "id"
+              FROM "roles"
+              WHERE "name" = 'admin'
+            )
+          `,
+          values: [this.id],
+        },
+        { type: QueryTypes.DELETE }
+      )
+      .catch(console.error);
+
+    await this.sequelize
+      .query(
+        {
+          query:
+            `
+            INSERT INTO "user_roles" ("userId", "roleId", "createdAt", "updatedAt")
+            SELECT
+              '${this.id}' AS "userId",
+              "id" AS "roleId",
+              CURRENT_TIMESTAMP AS "createdAt",
+              CURRENT_TIMESTAMP AS "updatedAt"
+            FROM "roles"
+            WHERE "roles"."id" IN (` +
+            '?'.repeat(roles.length).split('').join(',') +
+            `)
+          `,
+          values: [...roles.map((r) => r.id)],
+        },
+        { type: QueryTypes.INSERT }
+      )
+      .catch(console.error);
+  }
+
   public getRoles!: HasManyGetAssociationsMixin<Role>;
   public addRole!: HasManyAddAssociationMixin<Role, number>;
   public hasRole!: HasManyHasAssociationMixin<Role, number>;
@@ -117,12 +168,29 @@ export const Init = (db: Sequelize): void => {
       name: {
         type: DataTypes.VIRTUAL,
         get() {
-          return !this.getDataValue("firstName") ||
-            !this.getDataValue("lastName")
+          return !this.getDataValue('firstName') || !this.getDataValue('lastName')
             ? this.email
-            : `${this.getDataValue("firstName")} ${this.getDataValue(
-                "lastName"
-              )}`;
+            : `${this.getDataValue('firstName')} ${this.getDataValue('lastName')}`;
+        },
+      },
+      templateCount: {
+        type: DataTypes.VIRTUAL,
+        async get() {
+          return (
+            (await Template.count({
+              where: { userId: this.getDataValue('id') },
+            }).catch(console.error)) || 0
+          );
+        },
+      },
+      outputCount: {
+        type: DataTypes.VIRTUAL,
+        async get() {
+          return (
+            (await Output.count({
+              where: { userId: this.getDataValue('id') },
+            }).catch(console.error)) || 0
+          );
         },
       },
       email: {
@@ -136,7 +204,7 @@ export const Init = (db: Sequelize): void => {
         type: DataTypes.STRING,
         set(val: string) {
           const hash = bcrypt.hashSync(val, saltRounds);
-          this.setDataValue("password", hash);
+          this.setDataValue('password', hash);
         },
       },
       loginAttempts: {
@@ -144,18 +212,29 @@ export const Init = (db: Sequelize): void => {
         allowNull: false,
         defaultValue: 0,
       },
+      resetToken: {
+        type: DataTypes.STRING,
+        unique: true,
+      },
+      verifyToken: {
+        type: DataTypes.STRING,
+        unique: true,
+      },
+      verifiedAt: {
+        type: DataTypes.DATE,
+      },
     },
     {
       sequelize: db,
-      modelName: "user",
-      tableName: "users",
+      modelName: 'user',
+      tableName: 'users',
       paranoid: true,
       defaultScope: {
-        attributes: { exclude: ["password", "loginAttempts"] },
+        attributes: { exclude: ['password', 'loginAttempts'] },
       },
       scopes: {
         withPassword: {
-          attributes: { include: ["password", "loginAttempts"] },
+          attributes: { include: ['password', 'loginAttempts'] },
         },
       },
     }

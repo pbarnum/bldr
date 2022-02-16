@@ -1,18 +1,16 @@
-import React, { useState } from "react";
-import { Modal } from "react-bootstrap";
-import { useOutletContext } from "react-router-dom";
-import api from "../api";
-import { AppContext, newErrorAlert } from "../App";
-import { ApiMessage } from "../types/api";
-import { DownloadOutputResp, Output } from "../types/output";
+import React, { useState } from 'react';
+import { Modal } from 'react-bootstrap';
+import { useOutletContext } from 'react-router-dom';
+import { AppContext, newErrorAlert } from '../App';
+import api from '../api';
+import { ApiMessage } from '../types/api';
+import { DownloadOutputResp, Output } from '../types/output';
 
 export interface DisplayOutputFileProps {
-  output?: Output;
+  output?: Output | null;
 }
 
-const DisplayOutputFile = (
-  props: DisplayOutputFileProps
-): React.ReactElement => {
+const DisplayOutputFile = (props: DisplayOutputFileProps): React.ReactElement => {
   const ctx: AppContext = useOutletContext();
   const [showModal, setShowModal] = useState<boolean>(false);
 
@@ -57,10 +55,9 @@ const DisplayOutputFile = (
       .then((res: DownloadOutputResp) => {
         // Create blob link to download
         const url = window.URL.createObjectURL(new Blob([res.contents]));
-        const link = document.createElement("a");
+        const link = document.createElement('a');
         link.href = url;
-        link.setAttribute("download", res.fileName);
-        console.log(link);
+        link.setAttribute('download', res.fileName);
 
         // Append to html link element page
         document.body.appendChild(link);
@@ -132,9 +129,7 @@ const DisplayOutputFile = (
               <div className="mb-3 row">
                 <strong className="col-8">Variables Replaced</strong>
                 <div className="col">
-                  <p className="badge bg-secondary">
-                    {props.output.amountReplaced}
-                  </p>
+                  <p className="badge bg-secondary">{props.output.amountReplaced}</p>
                 </div>
               </div>
             </div>

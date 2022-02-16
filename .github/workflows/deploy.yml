@@ -21,9 +21,9 @@ jobs:
           # healthcheck: https://bldr-app.heroku-app.com/api/v1/health
         env:
           # HD_* required to pass vars to heroku
-          HD_NODE_ENV: production
           HD_REACT_APP_SERVER_HOST: https://${{ secrets.HEROKU_APP }}.herokuapp.com
           HD_APP_NAME: bldr
+          HD_APP_ENV: prod
           HD_LOG_LEVEL: info
           HD_JWT_SESSION: "true"
           HD_JWT_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}

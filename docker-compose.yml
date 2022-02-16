@@ -7,6 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: bldr-app
+    command: yarn dev
     env_file:
       - .env
     volumes:

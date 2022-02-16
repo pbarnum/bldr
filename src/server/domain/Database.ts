@@ -1,8 +1,10 @@
-import { Sequelize } from "sequelize";
-import { Configs } from "./Configs";
-import models from "../models";
-import seedScopesAndRoles from "../models/seed_roles_scopes";
-import seedUsers from "../models/seed_users";
+import { Sequelize } from 'sequelize';
+import models from '../models';
+import seedOutputs from '../models/seed_outputs';
+import seedScopesAndRoles from '../models/seed_roles_scopes';
+import seedTemplates from '../models/seed_templates';
+import seedUsers from '../models/seed_users';
+import { Configs } from './Configs';
 
 export default class Database {
   private readonly db: Sequelize;
@@ -12,7 +14,7 @@ export default class Database {
       ? c.db.url
       : `postgres://${c.db.user}:${c.db.pass}@${c.db.host}:${c.db.port}/${c.db.name}`;
     this.db = new Sequelize(url, {
-      dialect: "postgres",
+      dialect: 'postgres',
       dialectOptions: {
         ssl: c.db.ssl
           ? {
@@ -37,6 +39,8 @@ export default class Database {
   private async seed(): Promise<void> {
     await seedScopesAndRoles();
     await seedUsers(this.db);
+    await seedTemplates(this.db);
+    await seedOutputs(this.db);
   }
 
   get conn(): Sequelize {

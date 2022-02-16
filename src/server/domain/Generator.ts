@@ -1,6 +1,6 @@
-import Output from "../models/output";
-import Template from "../models/template";
-import * as path from "path";
+import * as path from 'path';
+import Output from '../models/output';
+import Template from '../models/template';
 
 export interface GeneratorOptions {
   name?: string;
@@ -18,11 +18,11 @@ export default class Generator {
 
   constructor(o: GeneratorOptions) {
     if (!o.output && !o.template) {
-      throw "bad arguments: Generator requires either an Output or a Template";
+      throw 'bad arguments: Generator requires either an Output or a Template';
     }
 
-    this._output = "";
-    this.name = o.name || o.output?.name || o.template?.name || "New Output";
+    this._output = '';
+    this.name = o.name || o.output?.name || o.template?.name || 'New Output';
     this.templateModel = o.template;
     this.outputModel = o.output;
 
@@ -32,19 +32,17 @@ export default class Generator {
   }
 
   fileName() {
-    let ext = ".txt";
-    if (path.extname(this.name) !== "") {
-      ext = "";
+    let ext = '.txt';
+    if (path.extname(this.name) !== '') {
+      ext = '';
     }
     return this.name + ext;
   }
 
   generate(variables: { [key: string]: string }): void {
     if (!this.templateModel) {
-      throw "invalid state: Template required to process variables";
+      throw 'invalid state: Template required to process variables';
     }
-
-    console.log(variables);
 
     let compiledData = this.templateModel.contents;
     Object.keys(variables).forEach((k: unknown) => {
@@ -52,9 +50,7 @@ export default class Generator {
       this.amountReplaced += found;
 
       if (found > 0) {
-        compiledData = compiledData
-          .split(k as string)
-          .join(variables[k as string]);
+        compiledData = compiledData.split(k as string).join(variables[k as string]);
       }
     });
 
@@ -66,7 +62,7 @@ export default class Generator {
   }
 
   get output(): string {
-    if (this._output !== "") {
+    if (this._output !== '') {
       return this._output;
     }
 
@@ -74,6 +70,6 @@ export default class Generator {
       return this.outputModel.contents;
     }
 
-    return "";
+    return '';
   }
 }
